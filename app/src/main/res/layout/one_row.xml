@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="@dimen/botton_margin_top"
+        android:background="@drawable/bg_tab"
+        android:gravity="center"
+        android:maxLines="1"
+        android:paddingBottom="@dimen/filelist_padding_top"
+        android:paddingTop="@dimen/filelist_padding_top"
+        android:text="文档一"
+        android:textColor="@color/title_dark"
+        android:textSize="@dimen/botton_title_size"
+        android:textStyle="bold" />
+
+</RelativeLayout>
