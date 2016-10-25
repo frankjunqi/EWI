@@ -25,7 +25,7 @@
             android:theme="@style/ActivityTheme.Full" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".TestActivity"
             android:label="@string/app_ewi_name"
             android:screenOrientation="landscape"
             android:theme="@style/ActivityTheme.Full">

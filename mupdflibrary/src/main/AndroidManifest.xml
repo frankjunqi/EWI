@@ -2,8 +2,7 @@
     package="com.artifex.mupdfdemo">
 
     <application
-        android:allowBackup="true"
-        android:theme="@style/AppTheme">
+        android:allowBackup="true">
 
     </application>
 
