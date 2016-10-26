@@ -1,12 +1,15 @@
 package baranek.vojtech.ftpclient;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -35,12 +38,16 @@ import android.widget.Toast;
 import com.artifex.mupdfdemo.MuPDFCore;
 import com.artifex.mupdfdemo.MuPDFPageAdapter;
 import com.artifex.mupdfdemo.MuPDFReaderView;
+import com.artifex.mupdfdemo.MuPDFView;
+import com.artifex.mupdfdemo.OutlineActivityData;
+import com.artifex.mupdfdemo.ReaderView;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -138,6 +145,7 @@ public class MainActivity extends Activity {
     private String deviceId = "";
 
     private MuPDFCore core;
+    private MuPDFReaderView mDocView;
     private int totalPage = 0;
     private int currentPage = 1;
 
@@ -235,6 +243,8 @@ public class MainActivity extends Activity {
         return value;
     }
 
+    private static long currentTimeLastTime = 0L;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -276,30 +286,40 @@ public class MainActivity extends Activity {
         adapter.setOnClickListener(new MyRecyclerAdapter.FileClickListen() {
             @Override
             public void filePdfClick(final String pdfPath) {
-                if (core != null) {
-                    core.onDestroy();
-                    core = null;
-                }
-                ll_pdf.removeAllViews();
-                totalPage = 1;
-                currentPage = 1;
-                tv_countpage.setText("");
-                requestHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (currentErrorFlag) {
-                            case NOREGISTEDEVICE: {
-                                iv_logo.setVisibility(View.VISIBLE);
-                                tv_progress_desc.setText("联系管理员关联该设备\n设备唯一码:" + deviceId);
-                            }
-                            case NONETWORK: {
-                                iv_logo.setVisibility(View.VISIBLE);
-                                tv_progress_desc.setText("网络出现异常,请检查网络链接...");
-                            }
-                        }
-                        openPdf(pdfPath);
+                if (System.currentTimeMillis() - currentTimeLastTime > 1000) {
+                    currentTimeLastTime = System.currentTimeMillis();
+                    if (core != null) {
+                        core.onDestroy();
+                        core = null;
                     }
-                }, 100);
+                    if (mDocView != null) {
+                        mDocView.applyToChildren(new ReaderView.ViewMapper() {
+                            public void applyToView(View view) {
+                                ((MuPDFView) view).releaseBitmaps();
+                            }
+                        });
+                    }
+                    ll_pdf.removeAllViews();
+                    totalPage = 1;
+                    currentPage = 1;
+                    tv_countpage.setText("");
+                    requestHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (currentErrorFlag) {
+                                case NOREGISTEDEVICE: {
+                                    iv_logo.setVisibility(View.VISIBLE);
+                                    tv_progress_desc.setText("联系管理员关联该设备\n设备唯一码:" + deviceId);
+                                }
+                                case NONETWORK: {
+                                    iv_logo.setVisibility(View.VISIBLE);
+                                    tv_progress_desc.setText("网络出现异常,请检查网络链接...");
+                                }
+                            }
+                            openPdf(pdfPath);
+                        }
+                    }, 100);
+                }
             }
         });
         requestHandler = new RequestHandler();
@@ -309,7 +329,14 @@ public class MainActivity extends Activity {
     }
 
     private void initPDF(String mFilePath) {
-        core = openFile(Uri.decode(mFilePath));
+        try {
+            core = new MuPDFCore(MainActivity.this, Uri.decode(mFilePath));
+        } catch (Exception e) {
+            core = null;
+        } catch (java.lang.OutOfMemoryError e) {
+            core = null;
+        }
+
         if (core != null && core.countPages() == 0) {
             return;
         }
@@ -317,7 +344,7 @@ public class MainActivity extends Activity {
             return;
         }
         if (core != null) {
-            MuPDFReaderView mDocView = new MuPDFReaderView(MainActivity.this) {
+            mDocView = new MuPDFReaderView(MainActivity.this) {
                 @Override
                 protected void onMoveToChild(int index) {
                     if (core == null) {
@@ -333,19 +360,10 @@ public class MainActivity extends Activity {
             tv_countpage.setText(currentPage + "/" + totalPage + "页");
             ll_pdf.addView(mDocView);
         }
-    }
 
 
-    private MuPDFCore openFile(String path) {
-        MuPDFCore core = null;
-        try {
-            core = new MuPDFCore(MainActivity.this, path);
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            return null;
-        }
-        return core;
     }
+
 
     private void asyncRequest() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -454,6 +472,7 @@ public class MainActivity extends Activity {
         AssyncFtpTaskActions assyncFtpTaskActions = new AssyncFtpTaskActions();
         assyncFtpTaskActions.execute("CHECKFILELIST", FTPPath);
     }
+
 
     private void openPdf(String pdfPath) {
         iv_logo.setVisibility(View.INVISIBLE);
@@ -684,6 +703,17 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (mDocView != null) {
+            mDocView.applyToChildren(new ReaderView.ViewMapper() {
+                public void applyToView(View view) {
+                    ((MuPDFView) view).releaseBitmaps();
+                }
+            });
+        }
+        if (core != null)
+            core.onDestroy();
+        core = null;
+
         if (requestHandler != null) {
             requestHandler.removeMessages(SENDFLAG);
         }

@@ -778,7 +778,7 @@ public class MuPDFActivity extends Activity implements FilePicker.FilePickerSupp
 	{
 		if (mDocView != null) {
 			mDocView.applyToChildren(new ReaderView.ViewMapper() {
-				void applyToView(View view) {
+				public void applyToView(View view) {
 					((MuPDFView)view).releaseBitmaps();
 				}
 			});

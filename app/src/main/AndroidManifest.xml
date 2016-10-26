@@ -25,7 +25,7 @@
             android:theme="@style/ActivityTheme.Full" />
 
         <activity
-            android:name=".TestActivity"
+            android:name=".MainActivity"
             android:label="@string/app_ewi_name"
             android:screenOrientation="landscape"
             android:theme="@style/ActivityTheme.Full">
@@ -37,15 +37,9 @@
         </activity>
 
         <activity
-            android:name=".SampleActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:windowSoftInputMode="adjustResize" />
-
-        <activity
             android:name=".MBActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize" />
-
 
         <receiver
             android:name=".TCTInsatllActionBroadcastReceiver"
