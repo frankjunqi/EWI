@@ -1,9 +1,7 @@
-/*
+package baranek.vojtech.ftpclient.view.progress;/*
  * Copyright (c) 2015 Zhang Hai <Dreaming.in.Code.ZH@Gmail.com>
  * All Rights Reserved.
  */
-
-package me.zhanghai.android.materialprogressbar;
 
 import android.graphics.Path;
 import android.support.v4.view.animation.PathInterpolatorCompat;
@@ -11,7 +9,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 /**
- * Interpolators backported for Animators in this library.
+ * baranek.vojtech.ftpclient.view.progress.Interpolators backported for baranek.vojtech.ftpclient.view.progress.Animators in this library.
  */
 class Interpolators {
 

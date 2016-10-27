@@ -1,12 +1,9 @@
 package baranek.vojtech.ftpclient.view;
 
 import android.content.Context;
-import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -19,7 +16,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.Calendar;
 
 import baranek.vojtech.ftpclient.R;
-import baranek.vojtech.ftpclient.SecretActivity;
 import baranek.vojtech.ftpclient.api.Host;
 
 /**

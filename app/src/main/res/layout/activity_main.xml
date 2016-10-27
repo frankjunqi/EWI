@@ -254,7 +254,7 @@
                 android:textColor="@color/title_dark"
                 android:textSize="@dimen/page_loder_size" />
 
-            <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            <baranek.vojtech.ftpclient.view.progress.MaterialProgressBar
                 android:id="@+id/progress"
                 style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
@@ -280,7 +280,7 @@
 
             </android.support.v7.widget.RecyclerView>
 
-            <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            <baranek.vojtech.ftpclient.view.progress.MaterialProgressBar
                 android:id="@+id/indeterminate_progress_large_library"
                 style="@style/Widget.MaterialProgressBar.ProgressBar"
                 android:layout_width="wrap_content"

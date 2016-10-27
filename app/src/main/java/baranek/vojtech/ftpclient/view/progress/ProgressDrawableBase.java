@@ -1,9 +1,7 @@
-/*
+package baranek.vojtech.ftpclient.view.progress;/*
  * Copyright (c) 2015 Zhang Hai <Dreaming.in.Code.ZH@Gmail.com>
  * All Rights Reserved.
  */
-
-package me.zhanghai.android.materialprogressbar;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -22,7 +20,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 
-import me.zhanghai.android.materialprogressbar.internal.ThemeUtils;
+import baranek.vojtech.ftpclient.R;
+import baranek.vojtech.ftpclient.view.progress.internal.ThemeUtils;
 
 abstract class ProgressDrawableBase extends Drawable
         implements IntrinsicPaddingDrawable, TintableDrawable {

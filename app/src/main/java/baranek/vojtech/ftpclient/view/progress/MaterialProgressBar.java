@@ -1,9 +1,7 @@
-/*
+package baranek.vojtech.ftpclient.view.progress;/*
  * Copyright (c) 2015 Zhang Hai <Dreaming.in.Code.ZH@Gmail.com>
  * All Rights Reserved.
  */
-
-package me.zhanghai.android.materialprogressbar;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -18,7 +16,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ProgressBar;
 
-import me.zhanghai.android.materialprogressbar.internal.DrawableCompat;
+import baranek.vojtech.ftpclient.R;
+import baranek.vojtech.ftpclient.view.progress.internal.DrawableCompat;
 
 /**
  * A {@link ProgressBar} subclass that handles tasks related to backported progress drawable.
@@ -137,7 +136,7 @@ public class MaterialProgressBar extends ProgressBar {
         if (drawable instanceof IntrinsicPaddingDrawable) {
             return ((IntrinsicPaddingDrawable) drawable).getUseIntrinsicPadding();
         } else {
-            throw new IllegalStateException("Drawable does not implement IntrinsicPaddingDrawable");
+            throw new IllegalStateException("Drawable does not implement baranek.vojtech.ftpclient.view.progress.IntrinsicPaddingDrawable");
         }
     }
 
@@ -153,7 +152,7 @@ public class MaterialProgressBar extends ProgressBar {
         if (drawable instanceof IntrinsicPaddingDrawable) {
             ((IntrinsicPaddingDrawable) drawable).setUseIntrinsicPadding(useIntrinsicPadding);
         } else {
-            throw new IllegalStateException("Drawable does not implement IntrinsicPaddingDrawable");
+            throw new IllegalStateException("Drawable does not implement baranek.vojtech.ftpclient.view.progress.IntrinsicPaddingDrawable");
         }
     }
 
@@ -186,7 +185,7 @@ public class MaterialProgressBar extends ProgressBar {
         if (drawable instanceof ShowTrackDrawable) {
             ((ShowTrackDrawable) drawable).setShowTrack(showTrack);
         } else if (showTrack) {
-            throw new IllegalStateException("Drawable does not implement ShowTrackDrawable");
+            throw new IllegalStateException("Drawable does not implement baranek.vojtech.ftpclient.view.progress.ShowTrackDrawable");
         }
     }
 
@@ -306,7 +305,7 @@ public class MaterialProgressBar extends ProgressBar {
                 if (drawable instanceof TintableDrawable) {
                     ((TintableDrawable) drawable).setTintList(tint.mTintList);
                 } else {
-                    Log.w(TAG, "drawable did not implement TintableDrawable, it won't be tinted below Lollipop");
+                    Log.w(TAG, "drawable did not implement baranek.vojtech.ftpclient.view.progress.TintableDrawable, it won't be tinted below Lollipop");
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         drawable.setTintList(tint.mTintList);
                     }
@@ -317,7 +316,7 @@ public class MaterialProgressBar extends ProgressBar {
                 if (drawable instanceof TintableDrawable) {
                     ((TintableDrawable) drawable).setTintMode(tint.mTintMode);
                 } else {
-                    Log.w(TAG, "drawable did not implement TintableDrawable, it won't be tinted below Lollipop");
+                    Log.w(TAG, "drawable did not implement baranek.vojtech.ftpclient.view.progress.TintableDrawable, it won't be tinted below Lollipop");
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         drawable.setTintMode(tint.mTintMode);
                     }

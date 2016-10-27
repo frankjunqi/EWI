@@ -1,9 +1,7 @@
-/*
+package baranek.vojtech.ftpclient.view.progress;/*
  * Copyright (c) 2015 Zhang Hai <Dreaming.in.Code.ZH@Gmail.com>
  * All Rights Reserved.
  */
-
-package me.zhanghai.android.materialprogressbar;
 
 import android.animation.Animator;
 import android.content.Context;
@@ -12,7 +10,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.Keep;
 
-import me.zhanghai.android.materialprogressbar.internal.ThemeUtils;
+import baranek.vojtech.ftpclient.view.progress.internal.ThemeUtils;
 
 /**
  * A backported {@code Drawable} for indeterminate horizontal {@code ProgressBar}.
@@ -37,7 +35,7 @@ public class IndeterminateHorizontalProgressDrawable extends IndeterminateProgre
     private RectTransformX mRect2TransformX = new RectTransformX(RECT_2_TRANSFORM_X);
 
     /**
-     * Create a new {@code IndeterminateHorizontalProgressDrawable}.
+     * Create a new {@code baranek.vojtech.ftpclient.view.progress.IndeterminateHorizontalProgressDrawable}.
      *
      * @param context the {@code Context} for retrieving style information.
      */

@@ -3,7 +3,7 @@
  * All Rights Reserved.
  */
 
-package me.zhanghai.android.materialprogressbar.internal;
+package baranek.vojtech.ftpclient.view.progress.internal;
 
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;

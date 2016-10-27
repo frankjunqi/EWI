@@ -1,9 +1,7 @@
-/*
+package baranek.vojtech.ftpclient.view.progress;/*
  * Copyright (c) 2015 Zhang Hai <Dreaming.in.Code.ZH@Gmail.com>
  * All Rights Reserved.
  */
-
-package me.zhanghai.android.materialprogressbar;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -11,10 +9,10 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.graphics.Path;
 
-import me.zhanghai.android.materialprogressbar.internal.ObjectAnimatorCompat;
+import baranek.vojtech.ftpclient.view.progress.internal.ObjectAnimatorCompat;
 
 /**
- * Animators backported for Drawables in this library.
+ * baranek.vojtech.ftpclient.view.progress.Animators backported for Drawables in this library.
  */
 class Animators {
 

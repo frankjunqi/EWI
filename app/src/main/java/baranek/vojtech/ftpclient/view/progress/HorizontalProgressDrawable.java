@@ -1,9 +1,7 @@
-/*
+package baranek.vojtech.ftpclient.view.progress;/*
  * Copyright (c) 2015 Zhang Hai <Dreaming.in.Code.ZH@Gmail.com>
  * All Rights Reserved.
  */
-
-package me.zhanghai.android.materialprogressbar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,7 +13,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import me.zhanghai.android.materialprogressbar.internal.ThemeUtils;
+import baranek.vojtech.ftpclient.view.progress.internal.ThemeUtils;
 
 /**
  * A backported {@code Drawable} for determinate horizontal {@code ProgressBar}.
@@ -29,12 +27,12 @@ public class HorizontalProgressDrawable extends LayerDrawable
     private SingleHorizontalProgressDrawable mProgressDrawable;
 
     /**
-     * Create a new {@code HorizontalProgressDrawable}.
+     * Create a new {@code baranek.vojtech.ftpclient.view.progress.HorizontalProgressDrawable}.
      *
      * @param context the {@code Context} for retrieving style information.
      */
     public HorizontalProgressDrawable(Context context) {
-        super(new Drawable[] {
+        super(new Drawable[]{
                 new SingleHorizontalProgressDrawable(context),
                 new SingleHorizontalProgressDrawable(context),
                 new SingleHorizontalProgressDrawable(context)

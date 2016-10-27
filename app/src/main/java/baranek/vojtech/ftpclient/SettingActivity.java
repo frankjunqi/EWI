@@ -1,7 +1,6 @@
 package baranek.vojtech.ftpclient;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -10,8 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import baranek.vojtech.ftpclient.api.Host;
 

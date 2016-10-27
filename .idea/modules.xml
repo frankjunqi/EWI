@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/EWI.iml" filepath="$PROJECT_DIR$/EWI.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/materialprogressbarlib/materialprogressbarlib.iml" filepath="$PROJECT_DIR$/materialprogressbarlib/materialprogressbarlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/mupdflibrary/mupdflibrary.iml" filepath="$PROJECT_DIR$/mupdflibrary/mupdflibrary.iml" />
     </modules>
   </component>

@@ -1,9 +1,7 @@
-/*
+package baranek.vojtech.ftpclient.view.progress;/*
  * Copyright (c) 2015 Zhang Hai <Dreaming.in.Code.ZH@Gmail.com>
  * All Rights Reserved.
  */
-
-package me.zhanghai.android.materialprogressbar;
 
 import android.animation.Animator;
 import android.content.Context;
@@ -30,7 +28,7 @@ public class IndeterminateProgressDrawable extends IndeterminateProgressDrawable
     private RingRotation mRingRotation = new RingRotation();
 
     /**
-     * Create a new {@code IndeterminateProgressDrawable}.
+     * Create a new {@code baranek.vojtech.ftpclient.view.progress.IndeterminateProgressDrawable}.
      *
      * @param context the {@code Context} for retrieving style information.
      */
