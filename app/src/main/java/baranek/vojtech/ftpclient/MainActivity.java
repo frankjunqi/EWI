@@ -1,15 +1,12 @@
 package baranek.vojtech.ftpclient;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -25,7 +22,6 @@ import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -39,7 +35,6 @@ import com.artifex.mupdfdemo.MuPDFCore;
 import com.artifex.mupdfdemo.MuPDFPageAdapter;
 import com.artifex.mupdfdemo.MuPDFReaderView;
 import com.artifex.mupdfdemo.MuPDFView;
-import com.artifex.mupdfdemo.OutlineActivityData;
 import com.artifex.mupdfdemo.ReaderView;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -47,7 +42,6 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -220,7 +214,7 @@ public class MainActivity extends Activity {
         }
 
         String ftphost = getSP(Host.KWYFTPHOST);
-        if (!TextUtils.isEmpty(ftphost) && ftphost.split(".").length == 4) {
+        if (!TextUtils.isEmpty(ftphost) && ftphost.split("\\.").length == 4) {
             Host.FTPHOST = ftphost;
         }
 

@@ -1,8 +1,6 @@
 package com.artifex.mupdfdemo;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -586,28 +584,8 @@ public class ReaderView
             onLayout2(changed, left, top, right, bottom);
         } catch (OutOfMemoryError e) {
             System.out.println("Out of memory during layout");
-
-            // we might get an out of memory error.
-            // so let's display an alert.
-            // TODO: a better message, in resources.
-
-            if (!memAlert) {
-                memAlert = true;
-                AlertDialog alertDialog = MuPDFActivity.getAlertBuilder().create();
-                alertDialog.setMessage("Out of memory during layout");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                memAlert = false;
-                            }
-                        });
-                alertDialog.show();
-            }
         }
     }
-
-    private boolean memAlert = false;
 
     private void onLayout2(boolean changed, int left, int top, int right,
                            int bottom) {

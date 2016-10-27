@@ -73,7 +73,7 @@ public class SettingActivity extends Activity implements View.OnClickListener {
         }
 
         String ftphost = getSP(Host.KWYFTPHOST);
-        if (!TextUtils.isEmpty(ftphost) && ftphost.split(".").length == 4) {
+        if (!TextUtils.isEmpty(ftphost) && ftphost.split("\\.").length == 4) {
             et_ftp_host.setText(ftphost);
         } else {
             et_ftp_host.setText(Host.FTPHOST);
@@ -144,7 +144,7 @@ public class SettingActivity extends Activity implements View.OnClickListener {
             return;
         }
 
-        if (!TextUtils.isEmpty(ftphost) && ftphost.split(".").length == 4) {
+        if (!TextUtils.isEmpty(ftphost) && ftphost.split("\\.").length == 4) {
             Host.FTPHOST = ftphost;
             savaSP(Host.KWYFTPHOST, ftphost);
         } else {
@@ -180,6 +180,7 @@ public class SettingActivity extends Activity implements View.OnClickListener {
         }
         Host.TENLOOPER = time;
 
+        Toast.makeText(SettingActivity.this, "配置设置成功! ", Toast.LENGTH_SHORT).show();
         this.finish();
     }
 

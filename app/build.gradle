@@ -8,8 +8,8 @@ android {
         applicationId "baranek.vojtech.ftpclient"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 204
-        versionName "2.0.4"
+        versionCode 206
+        versionName "2.0.6"
     }
     buildTypes {
         release {
