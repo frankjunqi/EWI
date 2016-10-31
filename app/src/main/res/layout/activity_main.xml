@@ -58,138 +58,24 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/iv_one"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ll_one"
-                android:background="@drawable/split_left" />
-
-            <LinearLayout
-                android:id="@+id/ll_two"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/iv_one"
-                android:layout_marginBottom="@dimen/padding_bottom"
-                android:layout_marginLeft="@dimen/padding_left"
-                android:layout_marginTop="@dimen/padding_top"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="客户："
-                    android:textColor="@color/title_blue"
-                    android:textSize="@dimen/title_title_size"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <com.facebook.drawee.view.SimpleDraweeView
-                        android:id="@+id/iv_show_fresco"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="left"
-                        fresco:failureImage="@color/bg_content_middle"
-                        fresco:placeholderImage="@color/bg_content_middle" />
-
-                    <TextView
-                        android:id="@+id/tv_custname"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/title_dark"
-                        android:textSize="@dimen/title_title_size"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/iv_two"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ll_two"
-                android:background="@drawable/split_left" />
-
-            <LinearLayout
-                android:id="@+id/ll_three"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/iv_two"
-                android:layout_marginBottom="@dimen/padding_bottom"
-                android:layout_marginLeft="@dimen/padding_left"
-                android:layout_marginTop="@dimen/padding_top"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="订单："
-                    android:textColor="@color/title_blue"
-                    android:textSize="@dimen/title_title_size"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_order"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/title_dark"
-                    android:textSize="@dimen/title_title_size"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/iv_three"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ll_three"
-                android:background="@drawable/split_left" />
-
-            <LinearLayout
-                android:id="@+id/ll_four"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/iv_three"
-                android:layout_marginBottom="@dimen/padding_bottom"
-                android:layout_marginLeft="@dimen/padding_left"
-                android:layout_marginTop="@dimen/padding_top"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="产品："
-                    android:textColor="@color/title_blue"
-                    android:textSize="@dimen/title_title_size"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_product"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/title_dark"
-                    android:textSize="@dimen/title_title_size"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/iv_four"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ll_four"
-                android:background="@drawable/split_left" />
-
-            <ImageView
                 android:id="@+id/iv_lbpicpath"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:gravity="bottom"
                 android:visibility="visible" />
-        </RelativeLayout>
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewDirs"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@id/iv_lbpicpath"
+                android:layout_below="@id/ll_one">
+
+            </android.support.v7.widget.RecyclerView>
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/ll_middle"
@@ -219,6 +105,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:gravity="center"
                 android:orientation="vertical">
@@ -294,6 +182,7 @@
                 android:visibility="visible" />
 
         </RelativeLayout>
+
     </LinearLayout>
 
     <LinearLayout

@@ -16,62 +16,51 @@ import java.util.ArrayList;
  * <p/>
  * Custom adapter for RecylclerView for displaying files
  */
-public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.CustomViewHolder> {
+public class RecyclerDirsAdapter extends RecyclerView.Adapter<RecyclerDirsAdapter.CustomViewHolder> {
 
     private ArrayList<FTPFile> files = new ArrayList<>();
     private Context context;
-    private FileClickListen fileClickListen;
-    private FTPFile defaultFTPFile;
+    private FileDirClickListen fileClickListen;
 
-    private int currentPostion = 0;// 默认选中项目
+    private int currentPostion = -1;// 默认选中项目
 
-    public interface FileClickListen {
-        void filePdfClick(String pdfPath);
+    public interface FileDirClickListen {
+        void fileDirClick(String dirPath);
     }
 
-    public MyRecyclerAdapter(Context context) {
+    public RecyclerDirsAdapter(Context context) {
         this.context = context;
     }
 
     public void setFiles(FTPFile[] files) {
         this.files.clear();
-        currentPostion = 0;
-        if (defaultFTPFile != null) {
-            this.files.add(defaultFTPFile);
-        }
         for (int i = 0; files != null && i < files.length; i++) {
             this.files.add(files[i]);
         }
         notifyDataSetChanged();
     }
 
-    public void setDefaultFTPFile(FTPFile defaultFTPFile) {
-        this.defaultFTPFile = defaultFTPFile;
-    }
-
-    public void setOnClickListener(FileClickListen fileClickListen) {
+    public void setOnDirClickListener(FileDirClickListen fileClickListen) {
         this.fileClickListen = fileClickListen;
     }
 
     @Override
-    public MyRecyclerAdapter.CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerDirsAdapter.CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View View = LayoutInflater.from(parent.getContext()).inflate(R.layout.one_row, null);
         CustomViewHolder viewHolder = new CustomViewHolder(View);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final MyRecyclerAdapter.CustomViewHolder holder, final int position) {
-        String filename = files.get(position).getName();
-        final String link = files.get(position).getLink();
-
+    public void onBindViewHolder(final RecyclerDirsAdapter.CustomViewHolder holder, final int position) {
+        final String filename = files.get(position).getName();
         holder.tv1.setText(String.valueOf(filename));
 
         if (position == currentPostion) {
-            holder.tv1.setBackgroundResource(R.drawable.bg_tab_sel);
+            holder.tv1.setBackgroundResource(R.drawable.bg_left_tab_sel);
             holder.tv1.setTextColor(context.getResources().getColor(R.color.main_white));
         } else {
-            holder.tv1.setBackgroundResource(R.drawable.bg_tab);
+            holder.tv1.setBackgroundResource(R.drawable.bg_left_tab);
             holder.tv1.setTextColor(context.getResources().getColor(R.color.title_dark));
         }
 
@@ -80,7 +69,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.Cu
             public void onClick(View v) {
                 currentPostion = position;
                 if (fileClickListen != null) {
-                    fileClickListen.filePdfClick(link);
+                    fileClickListen.fileDirClick(filename);
                 }
                 notifyDataSetChanged();
             }

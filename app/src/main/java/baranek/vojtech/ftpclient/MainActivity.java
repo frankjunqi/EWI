@@ -22,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -36,7 +37,6 @@ import com.artifex.mupdfdemo.MuPDFPageAdapter;
 import com.artifex.mupdfdemo.MuPDFReaderView;
 import com.artifex.mupdfdemo.MuPDFView;
 import com.artifex.mupdfdemo.ReaderView;
-import com.facebook.drawee.view.SimpleDraweeView;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
 
     private final String TAG = getClass().getSimpleName();
     private String FTP_USER = "MES", FTP_PASS = "";
-    private final String EWIPATH = "/EWI";// 本地建立的文件夹的根目录
+    private final String EWIPATH = "/EWIST";// 本地建立的文件夹的根目录
     // 错误标识码
     private final String NOFILEERROR = "1";// 远程无文件
     private final String NOREGISTEDEVICE = "2";// 设备没有注册
@@ -82,6 +82,8 @@ public class MainActivity extends Activity {
     private final String FILEDOWNERROR = "6";// FILEDOWNOKEOOR
     private final String PDFNERROR = "7";// PDF error
     private final String NullPointerInputStream = "8";// inputstream is null
+    private final String ROOTFIELCHECK = "9";// root file check
+
 
     private static final int SENDFLAG = 0x10;// 发送请求的标志码
     private static final int TEMPERATURE = 0x11;// 发送温度的请求标志码
@@ -91,14 +93,11 @@ public class MainActivity extends Activity {
 
     @Bind(R.id.progress)
     MaterialProgressBar progress;
+
     @Bind(R.id.ll_pdf)
     LinearLayout ll_pdf;
-    @Bind(R.id.tv_custname)
-    TextView tv_custname;
     @Bind(R.id.tv_machinename)
     TextView tv_machinename;
-    @Bind(R.id.iv_show_fresco)
-    SimpleDraweeView iv_show_fresco;
     @Bind(R.id.tv_countpage)
     TextView tv_countpage;
     @Bind(R.id.ll_title)
@@ -109,28 +108,33 @@ public class MainActivity extends Activity {
     LinearLayout ll_content;
     @Bind(R.id.tv_progress_desc)
     TextView tv_progress_desc;
-    @Bind(R.id.tv_product)
-    TextView tv_product;
     @Bind(R.id.iv_logo)
     ImageView iv_logo;
-    @Bind(R.id.tv_order)
-    TextView tv_order;
+
+    @Bind(R.id.ll_one)
+    LinearLayout ll_one;
+
     @Bind(R.id.recyclerViewMain)
     RecyclerView recyclerViewMain;
+    private FTPFile[] fileDir;
+    private MyRecyclerAdapter adapter;
+
+
+    @Bind(R.id.recyclerViewDirs)
+    RecyclerView recyclerViewDirs;
+    // 左边目录列表
+    private FTPFile[] rootFiles;
+    private RecyclerDirsAdapter adapterDirs;
+
+
     @Bind(R.id.indeterminate_progress_large_library)
     MaterialProgressBar indeterminate_progress_large_library;
     @Bind(R.id.iv_lbpicpath)
     ImageView iv_lbpicpath;
 
-    private MyRecyclerAdapter adapter;
-    private FTPFile[] files;
     private FTPFile defaultFile = new FTPFile();
 
     // 接口请求的数据
-    private String MachineCode = "";//设备代码
-    private String PN = "";//零件号
-    private String PO = "";//订单号
-    private String CustName = "";
     private String MachineName = "";
     private String MachineDocPath = "";
     private String LBPicPath = "";
@@ -146,6 +150,7 @@ public class MainActivity extends Activity {
     private TitleLineView titleLineView;
 
     private int picWidth = 0;// 图片的宽度
+    private int picHeight = 0;// 图片的高度
 
     // 定时器操作
     private static RequestHandler requestHandler = null;
@@ -240,6 +245,7 @@ public class MainActivity extends Activity {
     private static long currentTimeLastTime = 0L;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -254,6 +260,7 @@ public class MainActivity extends Activity {
 
         int heightpix = wm.getDefaultDisplay().getHeight();
         int widthpix = wm.getDefaultDisplay().getWidth();
+
         picWidth = widthpix / 6;
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -273,6 +280,19 @@ public class MainActivity extends Activity {
         ll_title.addView(titleLineView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (heightpix - 18) / 9));
         ll_bottom.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 18));
         ll_content.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, heightpix + Host.BOTTOMHEIGHT - 18 - (heightpix - 18) / 9));
+
+        recyclerViewDirs.setLayoutManager(new LinearLayoutManager(this));
+        adapterDirs = new RecyclerDirsAdapter(this);
+        recyclerViewDirs.setAdapter(adapterDirs);
+        adapterDirs.setOnDirClickListener(new RecyclerDirsAdapter.FileDirClickListen() {
+            @Override
+            public void fileDirClick(String dirPath) {
+                indeterminate_progress_large_library.setVisibility(View.VISIBLE);
+                adapter.setFiles(null);
+                checkDirFileList(dirPath);
+            }
+        });
+
 
         recyclerViewMain.setLayoutManager(new LinearLayoutManager(this));
         adapter = new MyRecyclerAdapter(this);
@@ -365,25 +385,24 @@ public class MainActivity extends Activity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         EwiService service = retrofit.create(EwiService.class);
-        Call<EwiResBody> allMachineResBodyCall = service.allMachineList("Srv", "EWI.svc", "EWILogin", deviceId);
+        Call<EwiResBody> allMachineResBodyCall = service.allMachineList("Srv", "EWI.svc", "EWISTLogin", deviceId);
         allMachineResBodyCall.enqueue(new Callback<EwiResBody>() {
             @Override
             public void onResponse(Call<EwiResBody> call, Response<EwiResBody> response) {
                 if (response != null && response.body() != null && response.body().d != null && response.body().d.Data != null) {
-                    MachineCode = response.body().d.Data.MachineCode;
-                    String tempPN = response.body().d.Data.PN;
-                    CustName = response.body().d.Data.CustName;
                     FTPPath = response.body().d.Data.FTPPath;
                     String tempMachineDocPath = response.body().d.Data.MachineDocPath;
                     if (!MachineDocPath.equals(tempMachineDocPath)) {
                         MachineDocPath = tempMachineDocPath;
                         defaultFile.setLink(MachineDocPath);
                         defaultFile.setName("首页.pdf");
-                        indeterminate_progress_large_library.setVisibility(View.INVISIBLE);
                         recyclerViewMain.setVisibility(View.VISIBLE);
                         adapter.setDefaultFTPFile(defaultFile);
-                        adapter.setFiles(files);
+                        adapter.setFiles(fileDir);
                         DownloadFile(MachineDocPath);// download default pdf file
+
+                        adapterDirs.setFiles(rootFiles);
+
                     }
                     String tempLBPicPath = response.body().d.Data.LBPicPath;
                     if (!LBPicPath.equals(tempLBPicPath)) {
@@ -391,35 +410,18 @@ public class MainActivity extends Activity {
                         DownloadFile(LBPicPath);// download pic file
                     }
                     MachineName = response.body().d.Data.MachineName;
-                    PO = response.body().d.Data.PO;
-                    String CustLogo = response.body().d.Data.CustLogo;
-                    tv_custname.setText(CustName);
                     tv_machinename.setText(MachineName);
-                    tv_product.setText(tempPN);
-                    tv_order.setText(PO);
-                    if (TextUtils.isEmpty(CustLogo)) {
-                        iv_show_fresco.setVisibility(View.GONE);
-                    } else {
-                        iv_show_fresco.setVisibility(View.VISIBLE);
-                        Uri uri = Uri.parse(Host.HOST + "res/customer/" + CustLogo);
-                        iv_show_fresco.setImageURI(uri);
-                    }
                     handleMarqueeText(response.body().d.Data.Msg);
-                    // 判断pn是否发生变化，有变化需要更新远程files
-                    if (TextUtils.isEmpty(tempPN)) {
-                        tv_progress_desc.setText("设备空闲，无展示信息。");
-                        requestHandler.sendEmptyMessageDelayed(SENDFLAG, Host.TENLOOPER * 1000);
-                    } else if (!PN.equals(tempPN) || files == null || files.length == 0) {
-                        PN = tempPN;
+
+                    // 第一次进行情况操作
+                    if (rootFiles == null || rootFiles.length == 0) {
                         // delete file
                         deleteDirectory(Environment.getExternalStorageDirectory() + EWIPATH + File.separator);
                         // 创建目录
                         File pnFile = new File(Environment.getExternalStorageDirectory() + EWIPATH);
                         pnFile.mkdirs();
                         // 检查远程指定文件夹的file list
-                        checkFileList(FTPPath);
-                    } else {
-                        requestHandler.sendEmptyMessageDelayed(SENDFLAG, Host.TENLOOPER * 1000);
+                        checkRootFile(FTPPath);
                     }
                 } else {
                     currentErrorFlag = NOREGISTEDEVICE;
@@ -432,6 +434,9 @@ public class MainActivity extends Activity {
             public void onFailure(Call<EwiResBody> call, Throwable throwable) {
                 currentErrorFlag = NONETWORK;
                 tv_progress_desc.setText("网络出现异常，请检查网络链接...");
+                if (rootFiles != null && rootFiles.length > 0) {
+                    return;
+                }
                 requestHandler.sendEmptyMessageDelayed(SENDFLAG, Host.TENLOOPER * 1000);
             }
         });
@@ -462,9 +467,15 @@ public class MainActivity extends Activity {
         assyncFtpTaskActions.execute("DOWNLOAD", pdfFilePath);
     }
 
-    private void checkFileList(String FTPPath) {
+
+    private void checkRootFile(String rootFTPPath) {
         AssyncFtpTaskActions assyncFtpTaskActions = new AssyncFtpTaskActions();
-        assyncFtpTaskActions.execute("CHECKFILELIST", FTPPath);
+        assyncFtpTaskActions.execute("ROOTFIELCHECK", rootFTPPath);
+    }
+
+    private void checkDirFileList(String dirFTPPath) {
+        AssyncFtpTaskActions assyncFtpTaskActions = new AssyncFtpTaskActions();
+        assyncFtpTaskActions.execute("CHECKFILELIST", dirFTPPath);
     }
 
 
@@ -486,10 +497,17 @@ public class MainActivity extends Activity {
      */
     public class TaskDate {
         public String resultFlag;
-        public String pdfPath;
+        public String pdfPath, dirPathName;
     }
 
     public class AssyncFtpTaskActions extends AsyncTask<String, Void, TaskDate> {
+        @Override
+        protected void onPreExecute() {
+            progress.setVisibility(View.VISIBLE);
+            tv_progress_desc.setVisibility(View.VISIBLE);
+            setProgressBarIndeterminateVisibility(true);
+        }
+
         @Override
         protected TaskDate doInBackground(String... params) {
             FTPClient mFTPClient = new FTPClient();
@@ -504,16 +522,30 @@ public class MainActivity extends Activity {
                 mFTPClient.setFileTransferMode(FTPClient.STREAM_TRANSFER_MODE);
                 mFTPClient.enterLocalPassiveMode(); //开启本地被动模式
                 switch (params[0]) {
-                    case "CHECKFILELIST": {
+                    case "ROOTFIELCHECK": {
                         String FTPPath = params[1];
                         if (mFTPClient.changeWorkingDirectory(FTPPath)) {
-                            files = mFTPClient.listFiles();
+                            rootFiles = mFTPClient.listDirectories();
                         }
-                        if (files == null || files.length == 0) {
+                        if (rootFiles == null || rootFiles.length == 0) {
+                            currentErrorFlag = NOFILEERROR;
+                            taskDate.resultFlag = NOFILEERROR;
+                        } else {
+                            taskDate.resultFlag = ROOTFIELCHECK;
+                        }
+                        break;
+                    }
+                    case "CHECKFILELIST": {
+                        String dirFileName = params[1];
+                        if (mFTPClient.changeWorkingDirectory(FTPPath + dirFileName)) {
+                            fileDir = mFTPClient.listFiles();
+                        }
+                        if (fileDir == null || fileDir.length == 0) {
                             currentErrorFlag = NOFILEERROR;
                             taskDate.resultFlag = NOFILEERROR;
                         } else {
                             taskDate.resultFlag = FILECHECKOK;
+                            taskDate.dirPathName = dirFileName;
                         }
                         break;
                     }
@@ -564,37 +596,53 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        protected void onPreExecute() {
-            progress.setVisibility(View.VISIBLE);
-            tv_progress_desc.setVisibility(View.VISIBLE);
-            setProgressBarIndeterminateVisibility(true);
-        }
-
-        @Override
         protected void onPostExecute(TaskDate taskDate) {
+            indeterminate_progress_large_library.setVisibility(View.INVISIBLE);
             switch (taskDate.resultFlag) {
+                case ROOTFIELCHECK: {
+                    for (int i = 0; rootFiles.length > 0 && i < rootFiles.length; i++) {
+                        File filepaths = new File(Environment.getExternalStorageDirectory() + FTPPath + File.separator + rootFiles[i].getName());
+                        filepaths.mkdirs();
+                    }
+                    adapterDirs.setFiles(rootFiles);
+                    break;
+                }
                 case NullPointerInputStream: {
                     Toast.makeText(MainActivity.this, "文件 首页.pdf 不存在!", Toast.LENGTH_SHORT).show();
                     break;
                 }
                 case NOFILEERROR: {
                     // 远程文件不存在的情况下，10s后进行重新请求pn号
-                    iv_logo.setVisibility(View.VISIBLE);
+                    adapter.setFiles(fileDir);
                     tv_progress_desc.setText("远程文件资料不存在（" + FTPPath + ")");
-                    requestHandler.sendEmptyMessageDelayed(SENDFLAG, Host.TENLOOPER * 1000);
                     break;
                 }
                 case FILECHECKOK: {
                     // 远程文件有数据do nothing
-                    tv_progress_desc.setText("获取远程列表成功，开始进行下载文件...");
                     indeterminate_progress_large_library.setVisibility(View.INVISIBLE);
                     recyclerViewMain.setVisibility(View.VISIBLE);
-                    for (int i = 0; files != null && i < files.length; i++) {
-                        files[i].setLink(FTPPath + files[i].getName());
-                        DownloadFile(FTPPath + files[i].getName());
+                    for (int i = 0; fileDir != null && i < fileDir.length; i++) {
+                        String path = "";
+                        if (!TextUtils.isEmpty(taskDate.dirPathName)) {
+                            path = FTPPath + File.separator + taskDate.dirPathName + File.separator + fileDir[i].getName();
+                        } else {
+                            path = FTPPath + fileDir[i].getName();
+                        }
+                        Log.e("path==", path);
+                        fileDir[i].setLink(path);
+                        File fileEX = new File(Environment.getExternalStorageDirectory() + path);
+                        if (!fileEX.exists()) {
+                            tv_progress_desc.setText("获取远程列表成功，开始进行下载文件...");
+                            DownloadFile(path);
+                        } else {
+                            tv_progress_desc.setText("获取远程列表成功");
+                            if (fileEX.length() == 0) {
+                                fileEX.delete();
+                                DownloadFile(path);
+                            }
+                        }
                     }
-                    adapter.setFiles(files);
-                    requestHandler.sendEmptyMessageDelayed(SENDFLAG, Host.TENLOOPER * 1000);
+                    adapter.setFiles(fileDir);
                     break;
                 }
                 case FILEDOWNOK: {
@@ -613,11 +661,12 @@ public class MainActivity extends Activity {
                             BufferedInputStream bis = new BufferedInputStream(f);
                             bm = BitmapFactory.decodeStream(bis, null, options);
                             float scale = bm.getWidth() * 1.0f / bm.getHeight() * 1.0f;
-                            float height = picWidth / scale;
-                            RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) height);
+                            picHeight = (int) (picWidth / scale);
+                            RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, picHeight);
                             rl.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                             iv_lbpicpath.setLayoutParams(rl);
                             iv_lbpicpath.setImageBitmap(bm);
+
                         } catch (Exception e) {
                             // do nothing
                         }
@@ -626,13 +675,13 @@ public class MainActivity extends Activity {
                 }
                 case FILEDOWNERROR: {
                     // 下载失败，删除本地文件
-                    if (!TextUtils.isEmpty(taskDate.pdfPath)) {
-                        File file = new File(Environment.getExternalStorageDirectory() + taskDate.pdfPath);
-                        if (file.exists()) {
-                            file.delete();
+                    tv_progress_desc.setText("远程文件(" + taskDate.pdfPath + ")下载失败，请重新尝试...");
+                    if (taskDate != null && !TextUtils.isEmpty(taskDate.pdfPath)) {
+                        File pdfFile = new File(Environment.getExternalStorageDirectory() + taskDate.pdfPath);
+                        if (pdfFile.exists()) {
+                            pdfFile.delete();
                         }
                     }
-                    tv_progress_desc.setText("远程文件(" + taskDate.pdfPath + ")下载失败，请重新尝试...");
                     break;
                 }
                 case NONETWORK: {
@@ -641,13 +690,13 @@ public class MainActivity extends Activity {
                 }
                 case PDFNERROR: {
                     // 下载失败，删除本地文件
-                    if (!TextUtils.isEmpty(taskDate.pdfPath)) {
-                        File file = new File(Environment.getExternalStorageDirectory() + taskDate.pdfPath);
-                        if (file.exists()) {
-                            file.delete();
+                    tv_progress_desc.setText("文件下载出现异常.");
+                    if (taskDate != null && !TextUtils.isEmpty(taskDate.pdfPath)) {
+                        File pdfFile = new File(Environment.getExternalStorageDirectory() + taskDate.pdfPath);
+                        if (pdfFile.exists()) {
+                            pdfFile.delete();
                         }
                     }
-                    tv_progress_desc.setText("文件下载出现异常.");
                     break;
                 }
             }
@@ -737,7 +786,7 @@ public class MainActivity extends Activity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         EwiService service = retrofit.create(EwiService.class);
-        Call<UpdaeResBody> updaeResBodyCall = service.updateVersion("Srv", "Base.svc", "CheckUpdate", "MubeaEWI", String.valueOf(getVersionCode(MainActivity.this)));
+        Call<UpdaeResBody> updaeResBodyCall = service.updateVersion("Srv", "Base.svc", "CheckUpdate", "MubeaEWIST", String.valueOf(getVersionCode(MainActivity.this)));
         updaeResBodyCall.enqueue(new Callback<UpdaeResBody>() {
             @Override
             public void onResponse(Call<UpdaeResBody> call, Response<UpdaeResBody> response) {

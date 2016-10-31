@@ -79,6 +79,14 @@ public class TitleLineView extends LinearLayout {
         timeHandler.sendEmptyMessage(TIMEFLAG);
     }
 
+    public int getTitleHeight() {
+        // 计算高度
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        int heightpix = wm.getDefaultDisplay().getHeight();
+        int height = (heightpix - 18) / 9;
+        return height;
+    }
+
     private void refreshTime() {
         Calendar c = Calendar.getInstance();
         int day = c.get(Calendar.HOUR_OF_DAY);
@@ -147,6 +155,7 @@ public class TitleLineView extends LinearLayout {
 
     /**
      * 设置天气多云
+     *
      * @param weather
      */
     public void setTv_weather(String weather) {
